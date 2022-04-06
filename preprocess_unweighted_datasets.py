@@ -50,9 +50,14 @@ def preprocess_reality_call():
     df.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'weighted-graphs','reality-call.csv')), index=False, header=False)
 
 def preprocess_reality_call_v2():
+
     df = pd.read_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'unweighted-graphs','reality-call','reality-call-v2.csv')), header=0, sep=" ", names=['orig','dest','timestamp'])
 
     df = df[df['orig'] != df['dest']].reset_index(drop=True)
+
+    cols = ['orig','dest']
+    threshold = 2933 # 3% of nodes are known
+    df = df[df[cols] < threshold][cols].dropna().apply(np.int64)
 
     # adding two new columns to get min and max origin and destination users
     df['user1'] = df[['orig','dest']].min(axis=1)
